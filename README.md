@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🪙 btc-chat-agent
 
-## Getting Started
+A highly responsive, premium Bitcoin chat companion that acts as a trader's thinking partner. It combines real-time data fetching, strict security gates, and structured access to a separate daily pipeline database to deliver deep, context-aware trading insights tailored precisely to the user's active trade position.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Key Features
+
+* **Real-time Price Engine**: Fetches live spot market OHLCV and ticker data from Binance REST APIs.
+* **Cached Singleton Database client**: Integrated with MongoDB using strict connection-pooling patterns optimized for serverless executions.
+* **Adaptive Prompt Engine**: Frames every conversation dynamically around the user's active simulated trade coordinates (direction, entry price, distance, and health score).
+* **Decoupled LLM Factory**: Hot-swappable AI provider layer, keeping API endpoints independent from specific vendor libraries (e.g., Google Gemini).
+* **Strict Security Guard**: Next.js Edge Proxy intercepts all routes, gating them behind a JWT cookie authentication layer.
+* **Premium UI/UX**: Pitch-dark terminal theme with subtle glow filters, glassmorphic panels, and animated tool execution indicators.
+
+---
+
+## 🧠 Dynamic Chat Modes
+
+The chat agent continuously monitors user inputs, statements, and queries to shift its conversational persona dynamically across three distinct profiles:
+
+```
+┌──────────────────────────────────────────────┐
+│             Determined Intent                │
+└──────────────────────┬───────────────────────┘
+                       │
+       ┌───────────────┼───────────────┐
+       ▼               ▼               ▼
+[ Analyst Mode ] [ Devil's Advocate ] [ Tutor Mode ]
+  Objective &      Contrarian &         Instructive &
+  Analytical       Risk-Aware           Data-Backed
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. **Analyst Mode (Default)**:
+   * **Trigger**: Standard market questions or casual prompts (e.g., *"What is the current resistance?"*).
+   * **Style**: Objective, technical, and data-focused. Utilizes quantitative analysis and extracts structural observations directly from pipeline logs.
+2. **Devil's Advocate Mode**:
+   * **Trigger**: When the user states a strong market thesis or opinion (e.g., *"Bitcoin will break past $100k next week!"*).
+   * **Style**: Argumentative, inquisitive, and risk-aware. Challenges assumptions by presenting historical counter-evidence, sell-side risks, and contrarian pipeline data to help the trader avoid cognitive bias.
+3. **Tutor Mode**:
+   * **Trigger**: Queries regarding technical indicators, math, or definitions (e.g., *"How is CVD calculated?"*).
+   * **Style**: Clear, educational, and historically grounded. Uses real instances and metrics logged in the database rather than dry textbook jargon to illustrate concepts.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ⚙️ Environment Variables
 
-## Learn More
+The application relies on the following configurations. Create a `.env` file in the root directory based on [.env.example](.env.example):
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Description | Example |
+| :--- | :--- | :--- |
+| `LLM_PROVIDER` | Active AI provider framework | `gemini` |
+| `LLM_MODEL` | Specific LLM model identifier | `gemini-flash-lite-latest` |
+| `GOOGLE_API_KEY` | Credentials for Google Gemini API | `AIzaSy...` |
+| `MONGODB_URI` | Connection string for MongoDB | `mongodb+srv://...` |
+| `APP_PASSWORD` | Access gate password | `makestories4impact` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 💻 Local Development
 
-## Deploy on Vercel
+### 1. Prerequisite Installations
+Ensure you have **Node.js 20+** installed on your system.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 2. Configure Environment
+Copy the example variables file:
+```bash
+cp .env.example .env
+```
+Open `.env` and insert your API keys and credentials.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 3. Install Dependencies
+```bash
+npm install
+```
+
+### 4. Boot Development Server
+Run the dev task to start the application locally:
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your web browser. The standard proxy will redirect you to `/login`. Sign in using your configured `APP_PASSWORD`.
+
+---
+
+## 🚀 Production Deployment on Vercel
+
+The **btc-chat-agent** is engineered out-of-the-box for smooth serverless deployments on the Vercel platform.
+
+### Standard Git-Connected Deployment (Recommended)
+1. Push your repository to **GitHub**, **GitLab**, or **Bitbucket**.
+2. Visit the [Vercel Dashboard](https://vercel.com/dashboard) and click **"New Project"**.
+3. Import your repository.
+4. Expand the **Environment Variables** section and insert the keys outlined in the **Environment Variables** section.
+5. Click **"Deploy"**. Vercel will automatically analyze `vercel.json`, detect Next.js, and compile optimized static assets.
+
+### Vercel CLI Deployment
+If you prefer deploying directly from your terminal, execute the following commands:
+
+```bash
+# 1. Install the Vercel CLI globally if not already installed
+npm install -g vercel
+
+# 2. Login to your Vercel account
+vercel login
+
+# 3. Trigger the deployment wizard (link project and configure variables)
+vercel
+```
