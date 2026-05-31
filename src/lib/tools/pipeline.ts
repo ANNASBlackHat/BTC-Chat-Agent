@@ -15,12 +15,18 @@ export const getLatestAgentMemoryTool = tool({
   description: 'Retrieves the latest consolidated pipeline agent memory, market narrative, key consensus support/resistance levels, open channel predictions, and reflections.',
   inputSchema: z.object({}),
   execute: async (): Promise<{ memory: AgentMemory | null; error?: string }> => {
+    const startTime = Date.now()
+    console.log(`[${new Date().toISOString()}] [TOOL] getLatestAgentMemory called`)
     try {
       const memory = await getLatestAgentMemory()
-      return { memory }
+      const result = { memory }
+      console.log(`[${new Date().toISOString()}] [TOOL] getLatestAgentMemory completed in ${Date.now() - startTime}ms | memory retrieved`)
+      return result
     } catch (error: unknown) {
       const err = error as Error
-      return { memory: null, error: `Failed to retrieve agent memory: ${err.message}` }
+      const result = { memory: null, error: `Failed to retrieve agent memory: ${err.message}` }
+      console.log(`[${new Date().toISOString()}] [TOOL] getLatestAgentMemory failed in ${Date.now() - startTime}ms | error:`, result.error)
+      return result
     }
   },
 })
@@ -31,12 +37,19 @@ export const getRecentDailyAnalysesTool = tool({
     limit: z.number().optional().describe('Maximum number of analyses to retrieve (defaults to 10)'),
   }),
   execute: async ({ limit }: { limit?: number }): Promise<{ analyses: DailyAnalysis[] | null; error?: string }> => {
-    try {
-      const analyses = await getRecentDailyAnalyses(limit ?? 10)
-      return { analyses }
+    const startTime = Date.now()
+    const resolvedLimit = limit ?? 10
+    console.log(`[${new Date().toISOString()}] [TOOL] getRecentDailyAnalyses called | params: limit=${resolvedLimit}`)
+    try {      
+      const analyses = await getRecentDailyAnalyses(resolvedLimit)
+      const result = { analyses }
+      console.log(`[${new Date().toISOString()}] [TOOL] getRecentDailyAnalyses completed in ${Date.now() - startTime}ms | analyses count: ${analyses?.length}`)
+      return result
     } catch (error: unknown) {
       const err = error as Error
-      return { analyses: null, error: `Failed to retrieve daily analyses: ${err.message}` }
+      const result = { analyses: null, error: `Failed to retrieve daily analyses: ${err.message}` }
+      console.log(`[${new Date().toISOString()}] [TOOL] getRecentDailyAnalyses failed in ${Date.now() - startTime}ms | error:`, result.error)
+      return result
     }
   },
 })
@@ -47,12 +60,18 @@ export const getDailyAnalysisByVideoIdTool = tool({
     videoId: z.string().describe('The YouTube video ID to fetch'),
   }),
   execute: async ({ videoId }: { videoId: string }): Promise<{ analysis: DailyAnalysis | null; error?: string }> => {
+    const startTime = Date.now()
+    console.log(`[${new Date().toISOString()}] [TOOL] getDailyAnalysisByVideoId called | params: videoId=${videoId}`)
     try {
       const analysis = await getDailyAnalysisByVideoId(videoId)
-      return { analysis }
+      const result = { analysis }
+      console.log(`[${new Date().toISOString()}] [TOOL] getDailyAnalysisByVideoId completed in ${Date.now() - startTime}ms | analysis found: ${analysis ? 'yes' : 'no'}`)
+      return result
     } catch (error: unknown) {
       const err = error as Error
-      return { analysis: null, error: `Failed to retrieve video analysis: ${err.message}` }
+      const result = { analysis: null, error: `Failed to retrieve video analysis: ${err.message}` }
+      console.log(`[${new Date().toISOString()}] [TOOL] getDailyAnalysisByVideoId failed in ${Date.now() - startTime}ms | error:`, result.error)
+      return result
     }
   },
 })
@@ -63,12 +82,19 @@ export const getRecentPredictionsTool = tool({
     limit: z.number().optional().describe('Maximum number of predictions to retrieve (defaults to 10)'),
   }),
   execute: async ({ limit }: { limit?: number }): Promise<{ predictions: Prediction[] | null; error?: string }> => {
+    const startTime = Date.now()
+    const resolvedLimit = limit ?? 10
+    console.log(`[${new Date().toISOString()}] [TOOL] getRecentPredictions called | params: limit=${resolvedLimit}`)
     try {
-      const predictions = await getRecentPredictions(limit ?? 10)
-      return { predictions }
+      const predictions = await getRecentPredictions(resolvedLimit)
+      const result = { predictions }
+      console.log(`[${new Date().toISOString()}] [TOOL] getRecentPredictions completed in ${Date.now() - startTime}ms | predictions count: ${predictions?.length}`)
+      return result
     } catch (error: unknown) {
       const err = error as Error
-      return { predictions: null, error: `Failed to retrieve predictions: ${err.message}` }
+      const result = { predictions: null, error: `Failed to retrieve predictions: ${err.message}` }
+      console.log(`[${new Date().toISOString()}] [TOOL] getRecentPredictions failed in ${Date.now() - startTime}ms | error:`, result.error)
+      return result
     }
   },
 })
@@ -79,12 +105,18 @@ export const getPredictionByVideoIdTool = tool({
     videoId: z.string().describe('The YouTube video ID to fetch'),
   }),
   execute: async ({ videoId }: { videoId: string }): Promise<{ prediction: Prediction | null; error?: string }> => {
+    const startTime = Date.now()
+    console.log(`[${new Date().toISOString()}] [TOOL] getPredictionByVideoId called | params: videoId=${videoId}`)
     try {
       const prediction = await getPredictionByVideoId(videoId)
-      return { prediction }
+      const result = { prediction }
+      console.log(`[${new Date().toISOString()}] [TOOL] getPredictionByVideoId completed in ${Date.now() - startTime}ms | prediction found: ${prediction ? 'yes' : 'no'}`)
+      return result
     } catch (error: unknown) {
       const err = error as Error
-      return { prediction: null, error: `Failed to retrieve prediction: ${err.message}` }
+      const result = { prediction: null, error: `Failed to retrieve prediction: ${err.message}` }
+      console.log(`[${new Date().toISOString()}] [TOOL] getPredictionByVideoId failed in ${Date.now() - startTime}ms | error:`, result.error)
+      return result
     }
   },
 })
@@ -95,16 +127,24 @@ export const getTechniqueLedgerEntriesTool = tool({
     techniqueName: z.string().optional().describe('The specific technical analysis technique name to filter by (optional)'),
   }),
   execute: async ({ techniqueName }: { techniqueName?: string }): Promise<{ entries: TechniqueLedgerEntry[] | null; error?: string }> => {
+    const startTime = Date.now()
+    console.log(`[${new Date().toISOString()}] [TOOL] getTechniqueLedgerEntries called | params: techniqueName=${techniqueName || 'all'}`)
     try {
       if (techniqueName) {
         const entry = await getTechniqueLedgerEntry(techniqueName)
-        return { entries: entry ? [entry] : [] }
+        const result = { entries: entry ? [entry] : [] }
+        console.log(`[${new Date().toISOString()}] [TOOL] getTechniqueLedgerEntries completed in ${Date.now() - startTime}ms | entries count: ${result.entries.length}`)
+        return result
       }
       const entries = await getAllTechniqueLedgerEntries()
-      return { entries }
+      const result = { entries }
+      console.log(`[${new Date().toISOString()}] [TOOL] getTechniqueLedgerEntries completed in ${Date.now() - startTime}ms | entries count: ${entries?.length}`)
+      return result
     } catch (error: unknown) {
       const err = error as Error
-      return { entries: null, error: `Failed to retrieve technique ledger: ${err.message}` }
+      const result = { entries: null, error: `Failed to retrieve technique ledger: ${err.message}` }
+      console.log(`[${new Date().toISOString()}] [TOOL] getTechniqueLedgerEntries failed in ${Date.now() - startTime}ms | error:`, result.error)
+      return result
     }
   },
 })

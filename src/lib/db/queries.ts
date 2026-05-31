@@ -14,7 +14,7 @@ import {
 // Helper to get strictly typed db instance
 async function getDb() {
   const client = await clientPromise;
-  return client.db();
+  return client.db('btc_agent');
 }
 
 // Map MongoDB Document to typed interface converting ObjectID to string

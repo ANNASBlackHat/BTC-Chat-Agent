@@ -20,14 +20,20 @@ export const getPriceAlerts = tool({
   description: 'Retrieves the list of active Telegram price alerts/warnings from the database.',
   inputSchema: z.object({}),
   execute: async (): Promise<{ alerts: PriceAlert[] | null; error?: string }> => {
+    const startTime = Date.now()
+    console.log(`[${new Date().toISOString()}] [TOOL] getPriceAlerts called`)
     try {
       const response = await fetch(`${baseUrl}/api/targets`)
       if (!response.ok) throw new Error(`Trading Alert API responded with status ${response.status}`)
       const alerts = await response.json() as PriceAlert[]
-      return { alerts }
+      const result = { alerts }
+      console.log(`[${new Date().toISOString()}] [TOOL] getPriceAlerts completed in ${Date.now() - startTime}ms | alerts count: ${alerts.length}`)
+      return result
     } catch (error: unknown) {
       const err = error as Error
-      return { alerts: null, error: `Failed to retrieve price alerts: ${err.message}` }
+      const result = { alerts: null, error: `Failed to retrieve price alerts: ${err.message}` }
+      console.log(`[${new Date().toISOString()}] [TOOL] getPriceAlerts failed in ${Date.now() - startTime}ms | error:`, result.error)
+      return result
     }
   },
 })
@@ -51,6 +57,8 @@ export const createPriceAlert = tool({
     botName?: string; 
     symbol?: string; 
   }): Promise<{ success: boolean; alert: PriceAlert | null; error?: string }> => {
+    const startTime = Date.now()
+    console.log(`[${new Date().toISOString()}] [TOOL] createPriceAlert called | params: targetPrice=${targetPrice}, direction=${direction}, botName=${botName}, symbol=${symbol}`)
     try {
       let resolvedDirection = direction
       
@@ -81,10 +89,14 @@ export const createPriceAlert = tool({
       }
 
       const alert = await response.json() as PriceAlert
-      return { success: true, alert }
+      const result = { success: true, alert }
+      console.log(`[${new Date().toISOString()}] [TOOL] createPriceAlert completed in ${Date.now() - startTime}ms | alert created with direction: ${resolvedDirection}`)
+      return result
     } catch (error: unknown) {
       const err = error as Error
-      return { success: false, alert: null, error: `Failed to create price alert: ${err.message}` }
+      const result = { success: false, alert: null, error: `Failed to create price alert: ${err.message}` }
+      console.log(`[${new Date().toISOString()}] [TOOL] createPriceAlert failed in ${Date.now() - startTime}ms | error:`, result.error)
+      return result
     }
   },
 })
