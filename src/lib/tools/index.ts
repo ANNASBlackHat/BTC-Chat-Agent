@@ -12,6 +12,7 @@ import {
   getPredictionByVideoIdTool, 
   getTechniqueLedgerEntriesTool 
 } from './pipeline'
+import { getPriceAlerts, createPriceAlert } from './alert'
 
 export const allTools = {
   getCurrentPrice,
@@ -24,4 +25,7 @@ export const allTools = {
   getRecentPredictions: getRecentPredictionsTool,
   getPredictionByVideoId: getPredictionByVideoIdTool,
   getTechniqueLedgerEntries: getTechniqueLedgerEntriesTool,
+  getPriceAlerts,
+  createPriceAlert,
 }
+

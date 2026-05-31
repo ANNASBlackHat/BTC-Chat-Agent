@@ -202,3 +202,18 @@ export interface UIMessage {
   toolInvocations?: ToolInvocation[];
 }
 
+/**
+ * 11. PriceAlert
+ * Represents a price warning alert target (sent to Telegram when hit).
+ */
+export interface PriceAlert {
+  id?: string;
+  bot_name: string;
+  symbol: string;
+  target_price: number;
+  direction: 'up' | 'down';
+  created_at?: string;
+  last_state?: string;
+}
+
+

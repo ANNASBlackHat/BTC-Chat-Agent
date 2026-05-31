@@ -55,6 +55,26 @@ async function runTests() {
   )
   console.log('Technique Ledger Entries:', techniqueLedger)
 
+  console.log('\n--- Testing Price Alert Tools ---')
+  const alertsListBefore = await allTools.getPriceAlerts.execute!(
+    {},
+    { toolCallId: 'test-get-alerts-before', messages: [] }
+  )
+  console.log('Price Alerts List Before:', alertsListBefore)
+
+  console.log('Creating Test Price Alert at 99999...')
+  const createResult = await allTools.createPriceAlert.execute!(
+    { targetPrice: 99999, botName: 'Test-Bot', symbol: 'BTC' },
+    { toolCallId: 'test-create-alert', messages: [] }
+  )
+  console.log('Create Price Alert Result:', createResult)
+
+  const alertsListAfter = await allTools.getPriceAlerts.execute!(
+    {},
+    { toolCallId: 'test-get-alerts-after', messages: [] }
+  )
+  console.log('Price Alerts List After:', alertsListAfter)
+
   console.log('\n--- All tool tests execution complete ---')
   process.exit(0)
 }

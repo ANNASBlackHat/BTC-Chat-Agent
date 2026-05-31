@@ -4,6 +4,22 @@ A highly responsive, premium Bitcoin chat companion that acts as a trader's thin
 
 ---
 
+## 📍 Table of Contents
+
+- [🚀 Key Features](#-key-features)
+- [🧠 Dynamic Chat Modes](#-dynamic-chat-modes)
+- [🛠️ AI Agent Tools & Functions](#️-ai-agent-tools--functions)
+  - [Spot Price Tool](#spot-price-tool)
+  - [Session / Trading Position Tools](#session--trading-position-tools)
+  - [Pipeline & Database Insight Tools](#pipeline--database-insight-tools)
+  - [Price Warning Alert Tools](#price-warning-alert-tools-telegram-integration)
+  - [Multi-Step Reasoning Orchestration](#multi-step-reasoning-orchestration)
+- [⚙️ Environment Variables](#️-environment-variables)
+- [💻 Local Development](#-local-development)
+- [🚀 Production Deployment on Vercel](#-production-deployment-on-vercel)
+
+---
+
 ## 🚀 Key Features
 
 * **Real-time Price Engine**: Fetches live spot market OHLCV and ticker data from Binance REST APIs.
@@ -43,6 +59,71 @@ The chat agent continuously monitors user inputs, statements, and queries to shi
 
 ---
 
+## 🛠️ AI Agent Tools & Functions
+
+The AI agent uses the Vercel AI SDK `tool()` system to dynamically fetch live data, read pipeline databases, and manage the user's trading positions. Through agentic multi-step reasoning (up to 5 steps per prompt), the agent decides which tools to invoke, retrieves results, and reframes the analysis contextually.
+
+### 📈 Spot Price Tool
+* **`getCurrentPrice`**
+  * **File:** [`src/lib/tools/price.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/lib/tools/price.ts)
+  * **Parameters:** None (`{}`)
+  * **When it is used:** Used when the user asks for real-time spot price metrics (e.g., *"What is BTC trading at?"*) or to calculate active P&L for open positions.
+
+### 💼 Session / Trading Position Tools
+* **`getCurrentPosition`**
+  * **File:** [`src/lib/tools/session.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/lib/tools/session.ts)
+  * **Parameters:** None (`{}`)
+  * **When it is used:** Used to verify if the user has an active simulated trade logged in the database to tailor all technical levels and alerts relative to their entry.
+* **`updateUserPosition`**
+  * **File:** [`src/lib/tools/session.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/lib/tools/session.ts)
+  * **Parameters:** `direction` ("long" | "short"), `entryPrice` (number)
+  * **When it is used:** Used when the user reports opening or adjusting their position (e.g., *"I just went long at 68,500"*).
+* **`clearActivePosition`**
+  * **File:** [`src/lib/tools/session.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/lib/tools/session.ts)
+  * **Parameters:** None (`{}`)
+  * **When it is used:** Used when the user indicates they closed their trade (e.g., *"I exited my trade"*).
+
+### 🗄️ Pipeline & Database Insight Tools
+* **`getLatestAgentMemory`**
+  * **File:** [`src/lib/tools/pipeline.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/lib/tools/pipeline.ts)
+  * **Parameters:** None (`{}`)
+  * **When it is used:** Used when the user requests current consensus summaries, primary support/resistance ranges, or broad market narratives.
+* **`getRecentDailyAnalyses`**
+  * **File:** [`src/lib/tools/pipeline.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/lib/tools/pipeline.ts)
+  * **Parameters:** `limit` (optional number)
+  * **When it is used:** Used to fetch structured lists of daily analysis records, video titles, and overall sentiment metrics.
+* **`getDailyAnalysisByVideoId`**
+  * **File:** [`src/lib/tools/pipeline.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/lib/tools/pipeline.ts)
+  * **Parameters:** `videoId` (string)
+  * **When it is used:** Used to dive into a specific YouTube video's transcript summary and indicators.
+* **`getRecentPredictions`**
+  * **File:** [`src/lib/tools/pipeline.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/lib/tools/pipeline.ts)
+  * **Parameters:** `limit` (optional number)
+  * **When it is used:** Used to view open or resolved predictions tracked inside the pipeline ledger.
+* **`getPredictionByVideoId`**
+  * **File:** [`src/lib/tools/pipeline.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/lib/tools/pipeline.ts)
+  * **Parameters:** `videoId` (string)
+  * **When it is used:** Used to view prediction accuracy/tracking outcome for a specific video ID.
+* **`getTechniqueLedgerEntries`**
+  * **File:** [`src/lib/tools/pipeline.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/lib/tools/pipeline.ts)
+  * **Parameters:** `techniqueName` (optional string)
+  * **When it is used:** Used when querying historical indicators, hit-rates, and technical metrics (e.g., *"How reliable has the CVD indicator been?"*).
+
+### 🔔 Price Warning Alert Tools (Telegram Integration)
+* **`getPriceAlerts`**
+  * **File:** [`src/lib/tools/alert.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/lib/tools/alert.ts)
+  * **Parameters:** None (`{}`)
+  * **When it is used:** Used to fetch the active price alert list to keep the AI agent aware of existing warnings, avoiding duplicated alerts.
+* **`createPriceAlert`**
+  * **File:** [`src/lib/tools/alert.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/lib/tools/alert.ts)
+  * **Parameters:** `targetPrice` (number, required), `direction` ("up" | "down", optional), `botName` (string, optional), `symbol` (string, optional)
+  * **When it is used:** Used when a user requests a price reminder/alert or when the agent identifies a critical structural target where an alert is crucial to track the trend.
+
+### 🔗 Multi-Step Reasoning Orchestration
+The server-side endpoint at [`src/app/api/chat/route.ts`](file:///Users/annasblackhat/Documents/Experiment/btc-chat-agent/src/app/api/chat/route.ts) connects these tools directly using Vercel AI SDK's `streamText`. The system is configured with `stopWhen: stepCountIs(5)` to allow up to **5 reasoning steps**, empowering the agent to fetch a position, fetch real-time prices, and extract database records sequentially in a single turn.
+
+---
+
 ## ⚙️ Environment Variables
 
 The application relies on the following configurations. Create a `.env` file in the root directory based on [.env.example](.env.example):
@@ -53,7 +134,7 @@ The application relies on the following configurations. Create a `.env` file in 
 | `LLM_MODEL` | Specific LLM model identifier | `gemini-flash-lite-latest` |
 | `GOOGLE_API_KEY` | Credentials for Google Gemini API | `AIzaSy...` |
 | `MONGODB_URI` | Connection string for MongoDB | `mongodb+srv://...` |
-| `APP_PASSWORD` | Access gate password | `makestories4impact` |
+| `APP_PASSWORD` | Access gate password | `your-strong-password` |
 
 ---
 
