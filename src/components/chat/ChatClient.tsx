@@ -4,13 +4,14 @@ import * as React from "react";
 import { useChat } from "@ai-sdk/react";
 import { usePosition } from "@/hooks/usePosition";
 import { ChatWindow } from "./ChatWindow";
-import { UIMessage, UserPosition, ToolInvocation } from "@/types";
+import { UIMessage, UserPosition, ToolInvocation, ConversationStarter } from "@/types";
 
 interface ChatClientProps {
   initialPosition: UserPosition | null;
+  starters: ConversationStarter[];
 }
 
-export function ChatClient({ initialPosition }: ChatClientProps) {
+export function ChatClient({ initialPosition, starters }: ChatClientProps) {
   const {
     position,
     fetchPosition,
@@ -60,6 +61,25 @@ export function ChatClient({ initialPosition }: ChatClientProps) {
       setInput("");
     },
     [input, sendMessage, position]
+  );
+
+  const handleSelectStarter = React.useCallback(
+    (prompt: string) => {
+      sendMessage(
+        { text: prompt },
+        {
+          body: {
+            position: position
+              ? {
+                  direction: position.direction,
+                  entry_price: position.entry_price,
+                }
+              : null,
+          },
+        }
+      );
+    },
+    [sendMessage, position]
   );
 
   // Position context sync mechanism:
@@ -185,6 +205,8 @@ export function ChatClient({ initialPosition }: ChatClientProps) {
       activePosition={position}
       onClearPosition={handleClearPosition}
       onUpdatePosition={handleUpdatePosition}
+      starters={starters}
+      onSelect={handleSelectStarter}
     />
   );
 }

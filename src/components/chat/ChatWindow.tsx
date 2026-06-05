@@ -4,8 +4,9 @@ import * as React from "react";
 import { X, ShieldAlert, Cpu } from "lucide-react";
 import { MessageList } from "./MessageList";
 import { InputBar } from "./InputBar";
-import { UIMessage, UserPosition } from "@/types";
+import { UIMessage, UserPosition, ConversationStarter } from "@/types";
 import { cn } from "@/lib/utils";
+import { ConversationStarters } from "./ConversationStarters";
 
 export interface ChatWindowProps {
   messages: UIMessage[];
@@ -17,6 +18,8 @@ export interface ChatWindowProps {
   activePosition: UserPosition | null;
   onClearPosition?: () => void;
   onUpdatePosition?: (direction: "long" | "short", entryPrice: number) => void;
+  starters: ConversationStarter[];
+  onSelect?: (prompt: string) => void;
 }
 
 export function ChatWindow({
@@ -29,6 +32,8 @@ export function ChatWindow({
   activePosition,
   onClearPosition,
   onUpdatePosition,
+  starters,
+  onSelect,
 }: ChatWindowProps) {
   const [isEditing, setIsEditing] = React.useState(false);
   const [editDirection, setEditDirection] = React.useState<"long" | "short">("long");
@@ -194,8 +199,14 @@ export function ChatWindow({
       </header>
 
       {/* Main chat log stream viewport */}
-      <div className="flex-1 w-full overflow-hidden bg-gradient-to-b from-black via-zinc-950/20 to-black">
-        <MessageList messages={messages} isLoading={isLoading} />
+      <div className="flex-1 w-full overflow-hidden bg-gradient-to-b from-black via-zinc-950/20 to-black flex flex-col">
+        {messages.length === 0 ? (
+          <div className="flex-1 overflow-y-auto flex items-center justify-center">
+            <ConversationStarters starters={starters} onSelect={onSelect || (() => {})} />
+          </div>
+        ) : (
+          <MessageList messages={messages} isLoading={isLoading} />
+        )}
       </div>
 
       {/* Bottom Pinned Input Area */}

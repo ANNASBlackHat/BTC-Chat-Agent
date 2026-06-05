@@ -216,4 +216,15 @@ export interface PriceAlert {
   last_state?: string;
 }
 
+/**
+ * 12. ConversationStarter
+ * Represents a suggested starting prompt for a new chat session.
+ */
+export interface ConversationStarter {
+  icon: string;
+  title: string;
+  description: string;
+  prompt: string;
+}
+
 
