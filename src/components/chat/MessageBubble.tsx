@@ -4,10 +4,11 @@ import * as React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
-import { ChatMessage } from "@/types";
+import { ChatMessage, ToolInvocation } from "@/types";
+import { ToolCallPanel } from "./ToolCallPanel";
 
 export interface MessageBubbleProps {
-  message: ChatMessage;
+  message: ChatMessage & { toolInvocations?: ToolInvocation[] };
 }
 
 const AssistantAvatar = () => (
@@ -173,6 +174,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               {message.content}
             </ReactMarkdown>
           </div>
+
+          {message.role === "assistant" && message.toolInvocations && message.toolInvocations.length > 0 && (
+            <ToolCallPanel toolInvocations={message.toolInvocations} />
+          )}
         </div>
 
         {/* Timestamp */}

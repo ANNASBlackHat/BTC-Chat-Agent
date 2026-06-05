@@ -3,7 +3,6 @@
 import * as React from "react";
 import { Loader2 } from "lucide-react";
 import { MessageBubble } from "./MessageBubble";
-import { ToolCallIndicator } from "./ToolCallIndicator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatMessage, UIMessage, ToolInvocation } from "@/types";
 
@@ -16,13 +15,14 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   // Map Vercel AI SDK message to our strict ChatMessage type
-  const mapToChatMessage = (message: UIMessage): ChatMessage => {
+  const mapToChatMessage = (message: UIMessage): ChatMessage & { toolInvocations?: ToolInvocation[] } => {
     return {
       role: message.role === "user" ? "user" : "assistant",
       content: message.content,
       timestamp: message.createdAt 
         ? message.createdAt.toISOString() 
         : new Date().toISOString(),
+      toolInvocations: message.toolInvocations,
     };
   };
 
@@ -65,30 +65,12 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
         ) : (
           messages.map((message) => {
             const hasContent = message.content.trim() !== "";
-            const hasToolInvocations = 
-              message.toolInvocations && message.toolInvocations.length > 0;
 
             return (
               <div key={message.id} className="w-full flex flex-col">
                 {/* Render the text bubble only if content exists */}
                 {hasContent && (
                   <MessageBubble message={mapToChatMessage(message)} />
-                )}
-
-                {/* Render tool invocations associated with this message */}
-                {hasToolInvocations && (
-                  <div className="flex flex-col pl-11 my-1">
-                    {message.toolInvocations?.map((toolInv: ToolInvocation) => (
-                      <ToolCallIndicator
-                        key={toolInv.toolCallId}
-                        toolCallId={toolInv.toolCallId}
-                        toolName={toolInv.toolName}
-                        args={toolInv.args as Record<string, unknown>}
-                        state={toolInv.state}
-                        result={toolInv.result}
-                      />
-                    ))}
-                  </div>
                 )}
               </div>
             );
