@@ -88,8 +88,8 @@ export function ToolCallIndicator({
         className={cn(
           "flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg text-sm select-none border transition-all duration-200",
           isCompleted 
-            ? "bg-zinc-950/20 border-zinc-900/60 text-zinc-400 hover:border-zinc-800/80" 
-            : "bg-zinc-950/50 border-zinc-800/60 text-zinc-300 shadow-md shadow-black/30 backdrop-blur-sm"
+            ? "bg-card/20 border-border/60 text-muted-foreground hover:border-border/80" 
+            : "bg-card/50 border-border/60 text-foreground shadow-md shadow-foreground/2 dark:shadow-black/30 backdrop-blur-sm"
         )}
       >
         <div className="flex items-center gap-2.5 min-w-0">
@@ -97,19 +97,19 @@ export function ToolCallIndicator({
             className={cn(
               "flex items-center justify-center size-6 rounded-md border shrink-0 transition-colors",
               isCompleted 
-                ? "bg-emerald-950/10 border-emerald-900/50 text-emerald-400" 
-                : "bg-zinc-900/60 border-zinc-800 text-zinc-400"
+                ? "bg-emerald-500/10 dark:bg-emerald-950/10 border-emerald-500/20 dark:border-emerald-900/50 text-emerald-600 dark:text-emerald-400" 
+                : "bg-muted border border-border text-muted-foreground"
             )}
           >
             {isCompleted ? (
               <Check className="size-3.5 stroke-[3px]" />
             ) : (
-              <Loader2 className="size-3.5 animate-spin text-zinc-400" />
+              <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
             )}
           </div>
 
           <div className="flex items-center gap-2 min-w-0">
-            <Icon className={cn("size-4 shrink-0 opacity-70", !isCompleted && "text-zinc-300")} />
+            <Icon className={cn("size-4 shrink-0 opacity-70", !isCompleted && "text-foreground")} />
             <span className="font-medium truncate leading-none">{metadata.description}</span>
           </div>
         </div>
@@ -117,8 +117,8 @@ export function ToolCallIndicator({
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            "flex items-center justify-center size-7 rounded-md hover:bg-zinc-900/80 hover:text-zinc-200 transition-all active:scale-95 text-zinc-500",
-            isOpen && "text-zinc-200 bg-zinc-900/60"
+            "flex items-center justify-center size-7 rounded-md hover:bg-muted hover:text-foreground transition-all active:scale-95 text-muted-foreground",
+            isOpen && "text-foreground bg-muted"
           )}
           title="Toggle execution logs"
           type="button"
@@ -128,18 +128,18 @@ export function ToolCallIndicator({
       </div>
 
       {isOpen && (
-        <div className="mt-1.5 mx-1 p-3 rounded-lg bg-black border border-zinc-900 text-xs font-mono text-zinc-400 shadow-inner max-w-full overflow-hidden animate-slide-down">
+        <div className="mt-1.5 mx-1 p-3 rounded-lg bg-background border border-border text-xs font-mono text-muted-foreground shadow-inner max-w-full overflow-hidden animate-slide-down">
           <div className="flex flex-col gap-2">
             <div>
-              <span className="text-zinc-600 font-bold block mb-1 uppercase tracking-wider text-[10px]">{"// Parameters"}</span>
-              <pre className="whitespace-pre-wrap break-all bg-zinc-950/80 p-2 rounded border border-zinc-900 text-zinc-300 max-h-48 overflow-y-auto">
+              <span className="text-muted-foreground/60 font-bold block mb-1 uppercase tracking-wider text-[10px]">{"// Parameters"}</span>
+              <pre className="whitespace-pre-wrap break-all bg-muted/50 p-2 rounded border border-border text-foreground max-h-48 overflow-y-auto">
                 {JSON.stringify(args, null, 2)}
               </pre>
             </div>
             {isCompleted && result !== undefined && (
-              <div className="pt-2 border-t border-zinc-900/80">
-                <span className="text-zinc-600 font-bold block mb-1 uppercase tracking-wider text-[10px]">{"// Response"}</span>
-                <pre className="whitespace-pre-wrap break-all bg-zinc-950/80 p-2 rounded border border-zinc-900 text-zinc-300 max-h-60 overflow-y-auto">
+              <div className="pt-2 border-t border-border/80">
+                <span className="text-muted-foreground/60 font-bold block mb-1 uppercase tracking-wider text-[10px]">{"// Response"}</span>
+                <pre className="whitespace-pre-wrap break-all bg-muted/50 p-2 rounded border border-border text-foreground max-h-60 overflow-y-auto">
                   {JSON.stringify(result, null, 2)}
                 </pre>
               </div>

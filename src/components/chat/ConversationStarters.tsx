@@ -15,7 +15,7 @@ export function ConversationStarters({ starters, onSelect }: ConversationStarter
         <h2 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-amber-400 via-amber-200 to-zinc-100 bg-clip-text text-transparent">
           ₿ BTC Analysis Agent
         </h2>
-        <p className="text-sm text-zinc-400 font-medium tracking-wide">
+        <p className="text-sm text-muted-foreground font-medium tracking-wide">
           Your personal Bitcoin analyst
         </p>
       </div>
@@ -26,15 +26,15 @@ export function ConversationStarters({ starters, onSelect }: ConversationStarter
           <Card
             key={index}
             onClick={() => onSelect(starter.prompt)}
-            className="group cursor-pointer border border-zinc-800 bg-zinc-950/20 hover:bg-zinc-900/30 backdrop-blur-md transition-all duration-200 ease-in-out hover:border-zinc-700 hover:scale-[1.02] p-5 flex flex-col items-start text-left gap-2 rounded-xl"
+            className="group cursor-pointer border border-border bg-card/45 hover:bg-muted/30 backdrop-blur-md transition-all duration-200 ease-in-out hover:border-border/80 hover:scale-[1.02] p-5 flex flex-col items-start text-left gap-2 rounded-xl"
           >
             <span className="text-2xl filter drop-shadow-[0_0_8px_rgba(245,158,11,0.15)] select-none">
               {starter.icon}
             </span>
-            <h3 className="font-semibold text-sm text-zinc-200 group-hover:text-zinc-100 transition-colors">
+            <h3 className="font-semibold text-sm text-foreground group-hover:text-foreground/90 transition-colors">
               {starter.title}
             </h3>
-            <p className="text-xs text-zinc-500 group-hover:text-zinc-400 transition-colors leading-relaxed">
+            <p className="text-xs text-muted-foreground group-hover:text-muted-foreground/90 transition-colors leading-relaxed">
               {starter.description}
             </p>
           </Card>

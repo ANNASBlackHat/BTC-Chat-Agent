@@ -10,7 +10,7 @@ export default async function ChatPage() {
   const starters = await getConversationStarters();
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-black flex flex-col">
+    <div className="h-screen w-screen overflow-hidden bg-background text-foreground flex flex-col">
       <ChatClient initialPosition={position} starters={starters} />
     </div>
   );

@@ -191,18 +191,18 @@ export function ToolCallPanel({ toolInvocations }: ToolCallPanelProps) {
   const count = toolInvocations.length;
 
   return (
-    <div className="w-full mt-3 font-sans text-xs border border-zinc-900/60 rounded-xl bg-zinc-950/35 overflow-hidden shadow-inner shadow-black/10 select-none">
+    <div className="w-full mt-3 font-sans text-xs border border-border/60 rounded-xl bg-card/35 overflow-hidden shadow-inner shadow-foreground/2 dark:shadow-black/10 select-none">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CollapsibleTrigger className="w-full flex items-center justify-between px-3.5 py-2 hover:bg-zinc-900/20 active:bg-zinc-900/30 transition-colors cursor-pointer text-zinc-400 font-semibold focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-800">
+        <CollapsibleTrigger className="w-full flex items-center justify-between px-3.5 py-2 hover:bg-muted/20 active:bg-muted/30 transition-colors cursor-pointer text-muted-foreground font-semibold focus:outline-none focus-visible:ring-1 focus-visible:ring-border">
           <div className="flex items-center gap-1.5">
             <span>🔧</span>
             <span>{count} {count === 1 ? "tool" : "tools"} used</span>
           </div>
-          <span className="text-[10px] text-zinc-500">{isOpen ? "▴" : "▾"}</span>
+          <span className="text-[10px] text-muted-foreground/80">{isOpen ? "▴" : "▾"}</span>
         </CollapsibleTrigger>
 
-        <CollapsibleContent className="border-t border-zinc-900/40 bg-zinc-950/20">
-          <div className="divide-y divide-zinc-900/45 py-0.5">
+        <CollapsibleContent className="border-t border-border/40 bg-muted/10">
+          <div className="divide-y divide-border/45 py-0.5">
             {toolInvocations.map((tool, index) => {
               const statusIcon = getStatusIcon(tool.state);
               const summary = tool.state === "result" 
@@ -212,12 +212,12 @@ export function ToolCallPanel({ toolInvocations }: ToolCallPanelProps) {
               return (
                 <div 
                   key={tool.toolCallId || index} 
-                  className="flex items-center gap-3 px-4 py-2 hover:bg-zinc-900/10 transition-colors"
+                  className="flex items-center gap-3 px-4 py-2 hover:bg-muted/5 transition-colors"
                 >
                   <span className="shrink-0 text-[13px]">{statusIcon}</span>
-                  <span className="font-mono text-zinc-300 font-medium">{tool.toolName}</span>
+                  <span className="font-mono text-foreground font-medium">{tool.toolName}</span>
                   {summary && (
-                    <span className="text-zinc-500 font-normal ml-auto truncate max-w-[60%]">
+                    <span className="text-muted-foreground font-normal ml-auto truncate max-w-[60%]">
                       {summary}
                     </span>
                   )}

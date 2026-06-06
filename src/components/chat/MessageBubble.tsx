@@ -12,15 +12,15 @@ export interface MessageBubbleProps {
 }
 
 const AssistantAvatar = () => (
-  <div className="flex items-center justify-center size-8 rounded-lg bg-zinc-950 border border-zinc-900 shadow-md shadow-black/40 relative overflow-hidden group select-none shrink-0">
-    <div className="absolute inset-0 bg-gradient-to-tr from-emerald-950/40 to-zinc-900 opacity-60 group-hover:opacity-100 transition-opacity" />
-    <span className="font-sans font-extrabold text-sm text-emerald-400 z-10">₿</span>
+  <div className="flex items-center justify-center size-8 rounded-lg bg-card border border-border shadow-md shadow-foreground/5 dark:shadow-black/40 relative overflow-hidden group select-none shrink-0">
+    <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-muted opacity-60 group-hover:opacity-100 transition-opacity" />
+    <span className="font-sans font-extrabold text-sm text-emerald-500 dark:text-emerald-400 z-10">₿</span>
   </div>
 );
 
 const UserAvatar = () => (
-  <div className="flex items-center justify-center size-8 rounded-lg bg-zinc-900 border border-zinc-800 shadow-md shadow-black/20 select-none shrink-0">
-    <span className="font-sans font-bold text-xs text-zinc-400">U</span>
+  <div className="flex items-center justify-center size-8 rounded-lg bg-muted border border-border shadow-md shadow-foreground/5 dark:shadow-black/20 select-none shrink-0">
+    <span className="font-sans font-bold text-xs text-muted-foreground">U</span>
   </div>
 );
 
@@ -52,26 +52,26 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           className={cn(
             "px-4 py-3 rounded-2xl border text-sm transition-all duration-200",
             isUser
-              ? "bg-zinc-900/60 border-zinc-800/80 text-zinc-100 rounded-tr-none shadow-md shadow-black/10 hover:border-zinc-700/60"
-              : "bg-zinc-950/40 border-zinc-900 text-zinc-300 rounded-tl-none shadow-lg shadow-black/20 backdrop-blur-sm hover:border-zinc-800/80"
+              ? "bg-muted/60 dark:bg-zinc-900/60 border-border dark:border-zinc-800/80 text-foreground rounded-tr-none shadow-md shadow-foreground/5 dark:shadow-black/10 hover:border-border/80 dark:hover:border-zinc-700/60"
+              : "bg-card/40 border-border text-foreground rounded-tl-none shadow-lg shadow-foreground/5 dark:shadow-black/20 backdrop-blur-sm hover:border-border/80"
           )}
         >
-          <div className="prose prose-invert prose-sm max-w-none break-words">
+          <div className="prose dark:prose-invert prose-sm max-w-none break-words text-foreground">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
                 h1: ({ children }) => (
-                  <h1 className="text-base font-bold text-zinc-50 mt-4 mb-2 first:mt-0 tracking-tight">
+                  <h1 className="text-base font-bold text-foreground mt-4 mb-2 first:mt-0 tracking-tight">
                     {children}
                   </h1>
                 ),
                 h2: ({ children }) => (
-                  <h2 className="text-sm font-semibold text-zinc-200 mt-3.5 mb-1.5 first:mt-0 tracking-tight">
+                  <h2 className="text-sm font-semibold text-foreground mt-3.5 mb-1.5 first:mt-0 tracking-tight">
                     {children}
                   </h2>
                 ),
                 h3: ({ children }) => (
-                  <h3 className="text-xs font-semibold text-zinc-300 mt-3 mb-1 first:mt-0 uppercase tracking-wider">
+                  <h3 className="text-xs font-semibold text-muted-foreground mt-3 mb-1 first:mt-0 uppercase tracking-wider">
                     {children}
                   </h3>
                 ),
@@ -81,12 +81,12 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                   </p>
                 ),
                 ul: ({ children }) => (
-                  <ul className="list-disc pl-4 mb-2.5 text-[13.5px] text-zinc-300 space-y-1">
+                  <ul className="list-disc pl-4 mb-2.5 text-[13.5px] text-muted-foreground space-y-1">
                     {children}
                   </ul>
                 ),
                 ol: ({ children }) => (
-                  <ol className="list-decimal pl-4 mb-2.5 text-[13.5px] text-zinc-300 space-y-1">
+                  <ol className="list-decimal pl-4 mb-2.5 text-[13.5px] text-muted-foreground space-y-1">
                     {children}
                   </ol>
                 ),
@@ -96,13 +96,13 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                   const isInline = !match;
                   return isInline ? (
                     <code
-                      className="bg-zinc-900 border border-zinc-800/50 text-zinc-300 px-1.5 py-0.5 rounded font-mono text-[11px]"
+                      className="bg-muted border border-border/50 text-foreground px-1.5 py-0.5 rounded font-mono text-[11px]"
                       {...props}
                     >
                       {children}
                     </code>
                   ) : (
-                    <pre className="bg-zinc-950/80 border border-zinc-900 rounded-lg p-3 my-2 overflow-x-auto text-[11px] font-mono text-zinc-300 max-w-full">
+                    <pre className="bg-muted/50 dark:bg-zinc-950/80 border border-border rounded-lg p-3 my-2 overflow-x-auto text-[11px] font-mono text-foreground max-w-full">
                       <code className={className} {...props}>
                         {children}
                       </code>
@@ -110,32 +110,32 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                   );
                 },
                 table: ({ children }) => (
-                  <div className="my-3 overflow-x-auto border border-zinc-900 rounded-lg max-w-full shadow-inner shadow-black/30">
-                    <table className="min-w-full divide-y divide-zinc-900/60 text-left text-xs font-sans table-auto border-collapse bg-zinc-950/20">
+                  <div className="my-3 overflow-x-auto border border-border rounded-lg max-w-full shadow-inner shadow-foreground/5 dark:shadow-black/30">
+                    <table className="min-w-full divide-y divide-border/60 text-left text-xs font-sans table-auto border-collapse bg-card/20">
                       {children}
                     </table>
                   </div>
                 ),
                 thead: ({ children }) => (
-                  <thead className="bg-zinc-950 text-zinc-400 font-bold uppercase tracking-wider text-[10px] border-b border-zinc-900/60">
+                  <thead className="bg-muted text-muted-foreground font-bold uppercase tracking-wider text-[10px] border-b border-border/60">
                     {children}
                   </thead>
                 ),
                 tbody: ({ children }) => (
-                  <tbody className="divide-y divide-zinc-900/40">{children}</tbody>
+                  <tbody className="divide-y divide-border/40">{children}</tbody>
                 ),
                 tr: ({ children }) => (
-                  <tr className="hover:bg-zinc-900/10 transition-colors odd:bg-zinc-950/15">
+                  <tr className="hover:bg-muted/10 transition-colors odd:bg-muted/5">
                     {children}
                   </tr>
                 ),
                 th: ({ children }) => (
-                  <th className="px-3 py-2 border-b border-zinc-900 font-semibold">
+                  <th className="px-3 py-2 border-b border-border font-semibold">
                     {children}
                   </th>
                 ),
                 td: ({ children }) => (
-                  <td className="px-3 py-1.5 text-zinc-300 whitespace-nowrap font-medium text-[12px]">
+                  <td className="px-3 py-1.5 text-muted-foreground whitespace-nowrap font-medium text-[12px]">
                     {children}
                   </td>
                 ),
@@ -144,7 +144,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-emerald-400 hover:text-emerald-300 transition-colors underline decoration-emerald-950 hover:decoration-emerald-500 font-medium"
+                    className="text-emerald-500 dark:text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300 transition-colors underline decoration-emerald-250 dark:decoration-emerald-950 hover:decoration-emerald-500 font-medium"
                   >
                     {children}
                   </a>
@@ -153,20 +153,20 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                   const text = String(children).toLowerCase();
                   if (text === "long" || text === "bullish" || text === "buy") {
                     return (
-                      <strong className="font-bold text-emerald-400 bg-emerald-500/10 px-1 py-0.5 rounded border border-emerald-950/40 shadow-sm shadow-emerald-950/10">
+                      <strong className="font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1 py-0.5 rounded border border-emerald-500/20 dark:border-emerald-950/40 shadow-sm shadow-emerald-950/10">
                         {children}
                       </strong>
                     );
                   }
                   if (text === "short" || text === "bearish" || text === "sell") {
                     return (
-                      <strong className="font-bold text-rose-400 bg-rose-500/10 px-1 py-0.5 rounded border border-rose-950/40 shadow-sm shadow-rose-950/10">
+                      <strong className="font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1 py-0.5 rounded border border-rose-500/20 dark:border-rose-950/40 shadow-sm shadow-rose-950/10">
                         {children}
                       </strong>
                     );
                   }
                   return (
-                    <strong className="font-bold text-zinc-100">{children}</strong>
+                    <strong className="font-bold text-foreground">{children}</strong>
                   );
                 },
               }}
@@ -184,7 +184,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         {formattedTime && (
           <span
             className={cn(
-              "text-[10px] text-zinc-600 px-1 select-none font-medium mt-0.5",
+              "text-[10px] text-muted-foreground px-1 select-none font-medium mt-0.5",
               isUser ? "ml-auto text-right" : "mr-auto text-left"
             )}
           >
