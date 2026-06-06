@@ -89,17 +89,18 @@ export async function POST(req: Request) {
         }
       }
 
+      console.log(`role: ${role}, toolResult: ${JSON.stringify(msg.toolResults)}, toolCall: ${JSON.stringify(msg.toolCalls)}`);
       // Handle tool messages (role === 'tool')
       if (role === 'tool') {
         const toolResults: ToolResultPart[] = (msg.toolResults || (msg.parts && Array.isArray(msg.parts)
           ? msg.parts
-              .filter((p) => p.type === 'tool-result')
-              .map((p) => ({
-                type: 'tool-result' as const,
-                toolCallId: p.toolCallId || '',
-                toolName: p.toolName || '',
-                output: p.result,
-              }))
+            .filter((p) => p.type === 'tool-result')
+            .map((p) => ({
+              type: 'tool-result' as const,
+              toolCallId: p.toolCallId || '',
+              toolName: p.toolName || '',
+              output: p.result,
+            }))
           : [])) as ToolResultPart[];
 
         return {
@@ -119,13 +120,13 @@ export async function POST(req: Request) {
       if (role === 'assistant') {
         const extractedCalls = msg.toolCalls || (msg.parts && Array.isArray(msg.parts)
           ? msg.parts
-              .filter((p) => p.type === 'tool-call')
-              .map((p) => ({
-                type: 'function' as const,
-                id: p.toolCallId || '',
-                name: p.toolName || '',
-                args: p.args || {},
-              }))
+            .filter((p) => p.type === 'tool-call')
+            .map((p) => ({
+              type: 'function' as const,
+              id: p.toolCallId || '',
+              name: p.toolName || '',
+              args: p.args || {},
+            }))
           : undefined);
 
         if (extractedCalls && extractedCalls.length > 0) {
@@ -137,13 +138,13 @@ export async function POST(req: Request) {
         const assistantContent = typeof content === 'string'
           ? content
           : (Array.isArray(content)
-              ? content.map((c) => {
-                  if (typeof c === 'object' && c !== null && 'text' in c) {
-                    return { type: 'text' as const, text: c.text || '' };
-                  }
-                  return { type: 'text' as const, text: '' };
-                })
-              : '');
+            ? content.map((c) => {
+              if (typeof c === 'object' && c !== null && 'text' in c) {
+                return { type: 'text' as const, text: c.text || '' };
+              }
+              return { type: 'text' as const, text: '' };
+            })
+            : '');
 
         return {
           role: 'assistant',
@@ -163,13 +164,13 @@ export async function POST(req: Request) {
       const userContent = typeof content === 'string'
         ? content
         : (Array.isArray(content)
-            ? content.map((c) => {
-                if (typeof c === 'object' && c !== null && 'text' in c) {
-                  return { type: 'text' as const, text: c.text || '' };
-                }
-                return { type: 'text' as const, text: '' };
-              })
-            : '');
+          ? content.map((c) => {
+            if (typeof c === 'object' && c !== null && 'text' in c) {
+              return { type: 'text' as const, text: c.text || '' };
+            }
+            return { type: 'text' as const, text: '' };
+          })
+          : '');
 
       return {
         role: 'user',

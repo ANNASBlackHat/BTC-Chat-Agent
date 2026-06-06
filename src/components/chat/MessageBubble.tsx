@@ -25,6 +25,7 @@ const UserAvatar = () => (
 );
 
 export function MessageBubble({ message }: MessageBubbleProps) {
+  console.log("message", message);
   const isUser = message.role === "user";
   const formattedTime = React.useMemo(() => {
     try {

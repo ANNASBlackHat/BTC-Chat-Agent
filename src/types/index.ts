@@ -208,10 +208,15 @@ export interface UIMessage {
  */
 export interface PriceAlert {
   id?: string;
-  bot_name: string;
+  bot_name?: string;
   symbol: string;
-  target_price: number;
   direction: 'up' | 'down';
+  type?: 'price' | 'trailing';
+  target_price?: number;
+  trailing_percent?: number;
+  trailing_value?: number;
+  activation_price?: number;
+  note?: string;
   created_at?: string;
   last_state?: string;
 }

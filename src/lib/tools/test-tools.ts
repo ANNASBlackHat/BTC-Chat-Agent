@@ -64,10 +64,18 @@ async function runTests() {
 
   console.log('Creating Test Price Alert at 99999...')
   const createResult = await allTools.createPriceAlert.execute!(
-    { targetPrice: 99999, botName: 'Test-Bot', symbol: 'BTC' },
+    { targetPrice: 99999, botName: 'Test-Bot', symbol: 'BTC', note: 'BTC price warning note!' },
     { toolCallId: 'test-create-alert', messages: [] }
   )
   console.log('Create Price Alert Result:', createResult)
+
+  console.log('Creating Test Trailing Stop alert down by 15%...')
+  const createTrailingResult = await allTools.createPriceAlert.execute!(
+    { type: 'trailing', trailingPercent: 15, direction: 'down', symbol: 'ETHUSDT', note: 'ETH trailing stop triggered!' },
+    { toolCallId: 'test-create-trailing-alert', messages: [] }
+  )
+  console.log('Create Trailing Alert Result:', createTrailingResult)
+
 
   const alertsListAfter = await allTools.getPriceAlerts.execute!(
     {},

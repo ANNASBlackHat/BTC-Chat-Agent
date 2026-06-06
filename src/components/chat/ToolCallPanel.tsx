@@ -136,6 +136,44 @@ export function summarizeToolResult(toolName: string, result: unknown): string {
     case "updateUserPosition":
       return "position saved";
 
+    case "createPriceAlert": {
+      if (result && typeof result === "object") {
+        const record = result as Record<string, unknown>;
+        if (record.success && record.alert && typeof record.alert === "object") {
+          const alert = record.alert as Record<string, unknown>;
+          const type = alert.type || 'price';
+          const sym = alert.symbol || 'BTCUSDT';
+          const dir = alert.direction ? String(alert.direction).toUpperCase() : '';
+          
+          if (type === 'trailing') {
+            const trailingVal = alert.trailing_value !== undefined ? `$${alert.trailing_value}` : '';
+            const trailingPct = alert.trailing_percent !== undefined ? `${alert.trailing_percent}%` : '';
+            const val = trailingVal || trailingPct;
+            return `trailing alert set (${sym} trailing ${dir} ${val})`;
+          } else {
+            const price = alert.target_price !== undefined ? `$${Math.round(Number(alert.target_price)).toLocaleString()}` : '';
+            return `price alert set (${sym} ${dir} ${price})`;
+          }
+        } else if (record.error) {
+          return String(record.error);
+        }
+      }
+      return "alert creation failed";
+    }
+
+    case "getPriceAlerts": {
+      if (result && typeof result === "object") {
+        const record = result as Record<string, unknown>;
+        if ('alerts' in record) {
+          const arr = record.alerts;
+          if (Array.isArray(arr)) {
+            return `${arr.length} alerts loaded`;
+          }
+        }
+      }
+      return "alerts loaded";
+    }
+
     case "getPosition":
     case "getCurrentPosition": {
       let direction: string | null = null;
