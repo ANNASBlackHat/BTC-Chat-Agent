@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
 import { ChatMessage, ToolInvocation } from "@/types";
 import { ToolCallPanel } from "./ToolCallPanel";
+import { Copy, Check } from "lucide-react";
 
 export interface MessageBubbleProps {
   message: ChatMessage & { toolInvocations?: ToolInvocation[] };
@@ -27,6 +28,18 @@ const UserAvatar = () => (
 export function MessageBubble({ message }: MessageBubbleProps) {
   console.log("message", message);
   const isUser = message.role === "user";
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = React.useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy message:", err);
+    }
+  }, [message.content]);
+
   const formattedTime = React.useMemo(() => {
     try {
       return new Date(message.timestamp).toLocaleTimeString([], {
@@ -51,12 +64,28 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         {/* Chat bubble content */}
         <div
           className={cn(
-            "px-4 py-3 rounded-2xl border text-sm transition-all duration-200",
+            "px-4 py-3 rounded-2xl border text-sm transition-all duration-200 relative group/bubble",
             isUser
               ? "bg-muted/60 dark:bg-zinc-900/60 border-border dark:border-zinc-800/80 text-foreground rounded-tr-none shadow-md shadow-foreground/5 dark:shadow-black/10 hover:border-border/80 dark:hover:border-zinc-700/60"
               : "bg-card/40 border-border text-foreground rounded-tl-none shadow-lg shadow-foreground/5 dark:shadow-black/20 backdrop-blur-sm hover:border-border/80"
           )}
         >
+          {/* Copy Message Button */}
+          <button
+            onClick={handleCopy}
+            className={cn(
+              "absolute top-2 p-1 rounded-lg border border-border/80 bg-background/90 dark:bg-zinc-950/95 text-muted-foreground hover:text-foreground opacity-0 group-hover/bubble:opacity-100 transition-all duration-150 cursor-pointer shadow-sm hover:shadow active:scale-95 focus:outline-none z-10",
+              isUser ? "left-2" : "right-2"
+            )}
+            title="Copy message"
+            type="button"
+          >
+            {copied ? (
+              <Check className="size-3.5 text-emerald-500 animate-fade-in" />
+            ) : (
+              <Copy className="size-3.5 text-muted-foreground/80 hover:text-foreground" />
+            )}
+          </button>
           <div className="prose dark:prose-invert prose-sm max-w-none break-words text-foreground">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { X, ShieldAlert, Cpu } from "lucide-react";
+import { X, ShieldAlert, Cpu, Download } from "lucide-react";
 import { MessageList } from "./MessageList";
 import { InputBar } from "./InputBar";
 import { UIMessage, UserPosition, ConversationStarter } from "@/types";
@@ -39,6 +39,70 @@ export function ChatWindow({
   const [isEditing, setIsEditing] = React.useState(false);
   const [editDirection, setEditDirection] = React.useState<"long" | "short">("long");
   const [editPrice, setEditPrice] = React.useState("");
+
+  const handleExport = React.useCallback(() => {
+    if (messages.length === 0) return;
+
+    let markdown = `# BTC Chat Agent Session\n`;
+    markdown += `Generated on: ${new Date().toLocaleString()}\n\n`;
+
+    if (activePosition) {
+      markdown += `### 📈 Active Trade Thesis Position\n`;
+      markdown += `- **Direction**: ${activePosition.direction.toUpperCase()}\n`;
+      try {
+        const formattedPrice = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+          maximumFractionDigits: 0,
+        }).format(activePosition.entry_price);
+        markdown += `- **Entry Price**: ${formattedPrice}\n\n`;
+      } catch {
+        markdown += `- **Entry Price**: $${activePosition.entry_price}\n\n`;
+      }
+    } else {
+      markdown += `### 📈 Active Trade Thesis Position\n`;
+      markdown += `- **Direction**: None\n\n`;
+    }
+
+    markdown += `---\n\n## 💬 Conversation History\n\n`;
+
+    messages.forEach((msg, idx) => {
+      const roleText = msg.role === "user" ? "👤 User" : "🤖 BTC Chat Agent";
+      const timestampText = msg.createdAt
+        ? new Date(msg.createdAt).toLocaleString()
+        : new Date().toLocaleString();
+
+      markdown += `### ${roleText} _(${timestampText})_\n\n`;
+      markdown += `${msg.content}\n\n`;
+
+      if (msg.toolInvocations && msg.toolInvocations.length > 0) {
+        markdown += `*System Tool Calls executed in this step:*\n`;
+        msg.toolInvocations.forEach((tool) => {
+          markdown += `- **${tool.toolName}** (${tool.state === "result" ? "resolved" : "calling"})\n`;
+        });
+        markdown += `\n`;
+      }
+
+      if (idx < messages.length - 1) {
+        markdown += `---\n\n`;
+      }
+    });
+
+    try {
+      const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const dateStr = new Date().toISOString().slice(0, 10);
+      link.download = `btc-chat-export-${dateStr}.md`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to export chat session:", err);
+    }
+  }, [messages, activePosition]);
 
   const handleInjectCommand = (prefix: string) => {
     setInput(prefix);
@@ -196,6 +260,16 @@ export function ChatWindow({
               <span className="uppercase tracking-wider">No Active Position</span>
             </button>
           )}
+
+          <button
+            onClick={handleExport}
+            disabled={messages.length === 0}
+            className="flex items-center justify-center size-9 rounded-xl border border-border bg-card/40 hover:bg-muted text-foreground disabled:opacity-40 disabled:hover:bg-card/40 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer active:scale-95 shadow-md hover:shadow-lg focus:outline-none"
+            title={messages.length === 0 ? "No chat history to export" : "Export conversation as Markdown"}
+            type="button"
+          >
+            <Download className="size-4.5" />
+          </button>
 
           <div className="border-l border-border h-5 mx-0.5" />
 
