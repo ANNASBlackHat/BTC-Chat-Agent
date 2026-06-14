@@ -214,3 +214,18 @@ export async function addMessageToSession(sessionId: string, message: ChatMessag
   
   return getChatSession(sessionId);
 }
+
+/**
+ * Retrieves the latest analysis_date from the daily_analyses collection.
+ */
+export async function getLatestAnalysisDate(): Promise<string | null> {
+  const db = await getDb();
+  const doc = await db.collection('daily_analyses')
+    .find({})
+    .sort({ analysis_date: -1 })
+    .project({ analysis_date: 1 })
+    .limit(1)
+    .next();
+  return doc ? (doc.analysis_date as string) : null;
+}
+

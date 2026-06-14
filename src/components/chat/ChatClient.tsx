@@ -9,9 +9,10 @@ import { UIMessage, UserPosition, ToolInvocation, ConversationStarter } from "@/
 interface ChatClientProps {
   initialPosition: UserPosition | null;
   starters: ConversationStarter[];
+  latestAnalysisDate: string | null;
 }
 
-export function ChatClient({ initialPosition, starters }: ChatClientProps) {
+export function ChatClient({ initialPosition, starters, latestAnalysisDate }: ChatClientProps) {
   const {
     position,
     fetchPosition,
@@ -207,6 +208,7 @@ export function ChatClient({ initialPosition, starters }: ChatClientProps) {
       onUpdatePosition={handleUpdatePosition}
       starters={starters}
       onSelect={handleSelectStarter}
+      latestAnalysisDate={latestAnalysisDate}
     />
   );
 }

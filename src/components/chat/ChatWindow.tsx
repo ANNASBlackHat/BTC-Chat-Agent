@@ -21,6 +21,7 @@ export interface ChatWindowProps {
   onUpdatePosition?: (direction: "long" | "short", entryPrice: number) => void;
   starters: ConversationStarter[];
   onSelect?: (prompt: string) => void;
+  latestAnalysisDate: string | null;
 }
 
 export function ChatWindow({
@@ -35,6 +36,7 @@ export function ChatWindow({
   onUpdatePosition,
   starters,
   onSelect,
+  latestAnalysisDate,
 }: ChatWindowProps) {
   const [isEditing, setIsEditing] = React.useState(false);
   const [editDirection, setEditDirection] = React.useState<"long" | "short">("long");
@@ -121,6 +123,20 @@ export function ChatWindow({
     }
   }, [activePosition]);
 
+  const isUpToDate = React.useMemo(() => {
+    if (!latestAnalysisDate) return false;
+    try {
+      const latest = new Date(latestAnalysisDate + "T00:00:00");
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const diffTime = today.getTime() - latest.getTime();
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
+      return diffDays <= 1;
+    } catch {
+      return false;
+    }
+  }, [latestAnalysisDate]);
+
   return (
     <div className="flex flex-col h-full w-full bg-background text-foreground relative overflow-hidden font-sans">
       {/* Premium Glassmorphic Header */}
@@ -133,9 +149,23 @@ export function ChatWindow({
             <h1 className="text-sm font-bold tracking-wider text-foreground uppercase leading-none">
               BTC Chat Agent
             </h1>
-            <span className="text-[9.5px] text-muted-foreground font-semibold uppercase tracking-widest mt-1 leading-none">
-              Active Thinking Partner
-            </span>
+            <div className="flex items-center gap-1.5 mt-1 leading-none">
+              <span className="text-[9.5px] text-muted-foreground font-semibold uppercase tracking-widest">
+                Active Thinking Partner
+              </span>
+              {latestAnalysisDate && (
+                <>
+                  <span className="inline-block size-0.5 rounded-full bg-border" />
+                  <span className="text-[9.5px] text-muted-foreground font-semibold uppercase tracking-widest flex items-center gap-1">
+                    <span className={cn(
+                      "size-1.5 rounded-full inline-block",
+                      isUpToDate ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+                    )} />
+                    Latest: {latestAnalysisDate}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
