@@ -9,7 +9,7 @@ export interface BtcPriceState {
   lastUpdated: string | null;
 }
 
-export function useBtcPrice(intervalMs = 12000) {
+export function useBtcPrice(intervalMs = 15000) {
   const [state, setState] = useState<BtcPriceState>({
     price: null,
     prevPrice: null,
@@ -33,7 +33,7 @@ export function useBtcPrice(intervalMs = 12000) {
           throw new Error(errData.error || `HTTP ${res.status}`);
         }
         const data = await res.json();
-        
+
         if (isMounted) {
           setState((prev) => ({
             price: data.price,
