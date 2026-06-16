@@ -9,9 +9,10 @@ import { ChatMessage, UIMessage, ToolInvocation } from "@/types";
 export interface MessageListProps {
   messages: UIMessage[];
   isLoading?: boolean;
+  onSelectSuggestion?: (prompt: string) => void;
 }
 
-export function MessageList({ messages, isLoading }: MessageListProps) {
+export function MessageList({ messages, isLoading, onSelectSuggestion }: MessageListProps) {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   // Map Vercel AI SDK message to our strict ChatMessage type
@@ -63,14 +64,18 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
             </p>
           </div>
         ) : (
-          messages.map((message) => {
+          messages.map((message, index) => {
             const hasContent = message.content.trim() !== "";
 
             return (
               <div key={message.id} className="w-full flex flex-col">
                 {/* Render the text bubble only if content exists */}
                 {hasContent && (
-                  <MessageBubble message={mapToChatMessage(message)} />
+                  <MessageBubble 
+                    message={mapToChatMessage(message)} 
+                    onSelectSuggestion={onSelectSuggestion}
+                    isLast={index === messages.length - 1}
+                  />
                 )}
               </div>
             );

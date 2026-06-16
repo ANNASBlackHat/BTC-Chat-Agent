@@ -10,6 +10,8 @@ import { Copy, Check } from "lucide-react";
 
 export interface MessageBubbleProps {
   message: ChatMessage & { toolInvocations?: ToolInvocation[] };
+  onSelectSuggestion?: (prompt: string) => void;
+  isLast?: boolean;
 }
 
 const AssistantAvatar = () => (
@@ -25,10 +27,33 @@ const UserAvatar = () => (
   </div>
 );
 
-export function MessageBubble({ message }: MessageBubbleProps) {
-  console.log("message", message);
+export function MessageBubble({ message, onSelectSuggestion, isLast }: MessageBubbleProps) {
   const isUser = message.role === "user";
   const [copied, setCopied] = React.useState(false);
+
+  const suggestions = React.useMemo(() => {
+    if (message.role !== "assistant" || !message.toolInvocations) return null;
+    const toolCall = message.toolInvocations.find(
+      (ti) => ti.toolName === "suggestFollowUps" && ti.state === "result"
+    );
+    if (toolCall && toolCall.result && typeof toolCall.result === "object") {
+      const resultObj = toolCall.result as Record<string, unknown>;
+      if (Array.isArray(resultObj.suggestions)) {
+        return resultObj.suggestions as string[];
+      }
+    }
+    return null;
+  }, [message]);
+
+  console.log("[DEBUG MessageBubble]", {
+    role: message.role,
+    isLast,
+    hasToolInvocations: !!message.toolInvocations,
+    toolInvocationsCount: message.toolInvocations ? message.toolInvocations.length : 0,
+    toolNames: message.toolInvocations ? message.toolInvocations.map(ti => ti.toolName) : [],
+    toolStates: message.toolInvocations ? message.toolInvocations.map(ti => ti.state) : [],
+    suggestions,
+  });
 
   const handleCopy = React.useCallback(async () => {
     try {
@@ -209,6 +234,22 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             <ToolCallPanel toolInvocations={message.toolInvocations} />
           )}
         </div>
+
+        {/* Dynamic Reply Suggestions */}
+        {!isUser && isLast && suggestions && suggestions.length > 0 && onSelectSuggestion && (
+          <div className="flex flex-wrap gap-2 mt-2 select-none animate-fade-in justify-start">
+            {suggestions.map((suggestion, idx) => (
+              <button
+                key={idx}
+                onClick={() => onSelectSuggestion(suggestion)}
+                className="px-3 py-1.5 rounded-xl border border-border bg-card/65 hover:bg-muted/40 text-[11.5px] text-foreground/80 hover:text-foreground font-semibold cursor-pointer transition-all duration-200 hover:scale-[1.01] hover:border-border/80 text-left active:scale-[0.98] shadow-sm hover:shadow"
+                type="button"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Timestamp */}
         {formattedTime && (

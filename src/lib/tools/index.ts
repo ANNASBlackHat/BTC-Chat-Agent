@@ -13,6 +13,7 @@ import {
   getTechniqueLedgerEntriesTool 
 } from './pipeline'
 import { getPriceAlerts, createPriceAlert } from './alert'
+import { suggestFollowUps } from './suggestions'
 
 export const allTools = {
   getCurrentPrice,
@@ -27,5 +28,7 @@ export const allTools = {
   getTechniqueLedgerEntries: getTechniqueLedgerEntriesTool,
   getPriceAlerts,
   createPriceAlert,
+  suggestFollowUps,
 }
+
 

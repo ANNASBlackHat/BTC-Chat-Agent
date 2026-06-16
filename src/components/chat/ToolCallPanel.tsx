@@ -222,11 +222,17 @@ function getStatusIcon(state: "call" | "result" | string): string {
 export function ToolCallPanel({ toolInvocations }: ToolCallPanelProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  if (!toolInvocations || toolInvocations.length === 0) {
+  const filteredInvocations = React.useMemo(() => {
+    return (toolInvocations || []).filter(
+      (ti) => ti.toolName !== "suggestFollowUps"
+    );
+  }, [toolInvocations]);
+
+  if (filteredInvocations.length === 0) {
     return null;
   }
 
-  const count = toolInvocations.length;
+  const count = filteredInvocations.length;
 
   return (
     <div className="w-full mt-3 font-sans text-xs border border-border/60 rounded-xl bg-card/35 overflow-hidden shadow-inner shadow-foreground/2 dark:shadow-black/10 select-none">
@@ -241,7 +247,7 @@ export function ToolCallPanel({ toolInvocations }: ToolCallPanelProps) {
 
         <CollapsibleContent className="border-t border-border/40 bg-muted/10">
           <div className="divide-y divide-border/45 py-0.5">
-            {toolInvocations.map((tool, index) => {
+            {filteredInvocations.map((tool, index) => {
               const statusIcon = getStatusIcon(tool.state);
               const summary = tool.state === "result" 
                 ? summarizeToolResult(tool.toolName, tool.result) 

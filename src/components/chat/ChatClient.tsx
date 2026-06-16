@@ -143,6 +143,14 @@ export function ChatClient({ initialPosition, starters, latestAnalysisDate }: Ch
       let toolInvocations: ToolInvocation[] | undefined = undefined;
 
       if (sdkMsg.parts && Array.isArray(sdkMsg.parts)) {
+        sdkMsg.parts.forEach((part, idx) => {
+          console.log(`[PART ${idx}]`, {
+            type: part.type,
+            keys: Object.keys(part),
+            toolCallId: (part as any).toolCallId,
+            toolName: (part as any).toolName,
+          });
+        });
         const toolInvocationsMap: Record<string, ToolInvocation> = {};
         for (const part of sdkMsg.parts) {
           if (part.type === "text") {
@@ -154,11 +162,11 @@ export function ChatClient({ initialPosition, starters, latestAnalysisDate }: Ch
               args: part.args || {},
               state: "call",
             };
-          } else if (part.type === "tool-result" && part.toolCallId && part.toolName) {
+          } else if (part.type === "tool-result" && part.toolCallId) {
             const existing = toolInvocationsMap[part.toolCallId];
             toolInvocationsMap[part.toolCallId] = {
               toolCallId: part.toolCallId,
-              toolName: part.toolName,
+              toolName: existing ? existing.toolName : (part.toolName || "unknown"),
               args: existing ? existing.args : (part.args || {}),
               state: "result",
               result: part.result,
@@ -184,6 +192,14 @@ export function ChatClient({ initialPosition, starters, latestAnalysisDate }: Ch
           result: ti.result,
         }));
       }
+
+      console.log("[DEBUG ChatClient mapped]", {
+        id: sdkMsg.id,
+        role: sdkMsg.role,
+        partsJson: JSON.stringify(sdkMsg.parts),
+        toolInvocationsJson: JSON.stringify(sdkMsg.toolInvocations),
+        parsedInvocationsJson: JSON.stringify(toolInvocations),
+      });
 
       return {
         id: sdkMsg.id,

@@ -8,6 +8,7 @@ import { UIMessage, UserPosition, ConversationStarter } from "@/types";
 import { cn } from "@/lib/utils";
 import { ConversationStarters } from "./ConversationStarters";
 import { ThemeToggle } from "./ThemeToggle";
+import { useBtcPrice } from "@/hooks/useBtcPrice";
 
 export interface ChatWindowProps {
   messages: UIMessage[];
@@ -41,6 +42,29 @@ export function ChatWindow({
   const [isEditing, setIsEditing] = React.useState(false);
   const [editDirection, setEditDirection] = React.useState<"long" | "short">("long");
   const [editPrice, setEditPrice] = React.useState("");
+
+  const { price, prevPrice, error: priceError, source: priceSource, lastUpdated: priceLastUpdated } = useBtcPrice();
+
+  const pnlInfo = React.useMemo(() => {
+    if (!activePosition || price === null) return null;
+    const entry = activePosition.entry_price;
+    const current = price;
+    const isLong = activePosition.direction === "long";
+    
+    const percent = isLong 
+      ? ((current - entry) / entry) * 100 
+      : ((entry - current) / entry) * 100;
+      
+    const usdDiff = isLong 
+      ? current - entry 
+      : entry - current;
+      
+    return {
+      percent,
+      usdDiff,
+      isProfit: percent >= 0,
+    };
+  }, [activePosition, price]);
 
   const handleExport = React.useCallback(() => {
     if (messages.length === 0) return;
@@ -171,6 +195,45 @@ export function ChatWindow({
 
         {/* Real-time Position Status Badge & Theme toggle */}
         <div className="flex items-center gap-3">
+          {/* Live BTC Spot Price Pill */}
+          {priceError ? (
+            <div 
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-[10.5px] font-semibold text-amber-500 shadow-inner select-none animate-fade-in animate-pulse"
+              title={`Price Offline: ${priceError}`}
+            >
+              <span className="flex size-1.5 rounded-full bg-amber-500" />
+              <span className="uppercase tracking-wider">Price Offline</span>
+            </div>
+          ) : price === null ? (
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-card/45 border border-border text-[10.5px] font-semibold text-muted-foreground shadow-inner select-none">
+              <span className="flex size-1.5 rounded-full bg-zinc-500 animate-pulse" />
+              <span className="uppercase tracking-wider">BTC Loading...</span>
+            </div>
+          ) : (
+            <div 
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-border text-xs font-mono font-bold shadow-inner select-none transition-all duration-300",
+                prevPrice !== null && price > prevPrice 
+                  ? "border-emerald-500/30 text-emerald-500 dark:text-emerald-400 bg-emerald-500/5" 
+                  : prevPrice !== null && price < prevPrice 
+                    ? "border-rose-500/30 text-rose-500 dark:text-rose-400 bg-rose-500/5" 
+                    : "text-foreground/90 bg-card"
+              )}
+              title={`Source: ${priceSource?.toUpperCase()} | Last updated: ${priceLastUpdated ? new Date(priceLastUpdated).toLocaleTimeString() : 'N/A'}`}
+            >
+              <span className="text-[10px] text-muted-foreground font-sans font-bold">BTC</span>
+              <span>
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                  maximumFractionDigits: 2,
+                }).format(price)}
+              </span>
+              {prevPrice !== null && price > prevPrice && <span className="text-[10px] text-emerald-500 font-sans">▲</span>}
+              {prevPrice !== null && price < prevPrice && <span className="text-[10px] text-rose-500 font-sans">▼</span>}
+            </div>
+          )}
+
           {isEditing ? (
             <form
               onSubmit={(e) => {
@@ -291,6 +354,33 @@ export function ChatWindow({
             </button>
           )}
 
+          {/* Unrealized P&L Pill */}
+          {pnlInfo && (
+            <div
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-semibold shadow-inner select-none animate-fade-in transition-all duration-300",
+                pnlInfo.isProfit
+                  ? "bg-emerald-500/10 dark:bg-emerald-950/20 border-emerald-500/30 dark:border-emerald-900/60 text-emerald-600 dark:text-emerald-400"
+                  : "bg-rose-500/10 dark:bg-rose-950/20 border-rose-500/30 dark:border-rose-900/60 text-rose-600 dark:text-rose-400"
+              )}
+              title="Unrealized Profit/Loss relative to current BTC Spot Price"
+            >
+              <span className="text-[9.5px] uppercase font-bold tracking-wider opacity-75">P&L</span>
+              <span className="font-mono font-bold">
+                {pnlInfo.isProfit ? "+" : ""}
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                  maximumFractionDigits: 2,
+                }).format(pnlInfo.usdDiff)}
+              </span>
+              <span className="font-mono text-[10px]">
+                ({pnlInfo.isProfit ? "+" : ""}
+                {pnlInfo.percent.toFixed(2)}%)
+              </span>
+            </div>
+          )}
+
           <button
             onClick={handleExport}
             disabled={messages.length === 0}
@@ -314,7 +404,7 @@ export function ChatWindow({
             <ConversationStarters starters={starters} onSelect={onSelect || (() => {})} />
           </div>
         ) : (
-          <MessageList messages={messages} isLoading={isLoading} />
+          <MessageList messages={messages} isLoading={isLoading} onSelectSuggestion={onSelect} />
         )}
       </div>
 
