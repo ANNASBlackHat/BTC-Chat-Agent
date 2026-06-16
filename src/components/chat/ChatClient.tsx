@@ -52,9 +52,9 @@ export function ChatClient({ initialPosition, starters, latestAnalysisDate }: Ch
           body: {
             position: position
               ? {
-                  direction: position.direction,
-                  entry_price: position.entry_price,
-                }
+                direction: position.direction,
+                entry_price: position.entry_price,
+              }
               : null,
           },
         }
@@ -72,9 +72,9 @@ export function ChatClient({ initialPosition, starters, latestAnalysisDate }: Ch
           body: {
             position: position
               ? {
-                  direction: position.direction,
-                  entry_price: position.entry_price,
-                }
+                direction: position.direction,
+                entry_price: position.entry_price,
+              }
               : null,
           },
         }
@@ -144,15 +144,20 @@ export function ChatClient({ initialPosition, starters, latestAnalysisDate }: Ch
 
       if (sdkMsg.parts && Array.isArray(sdkMsg.parts)) {
         sdkMsg.parts.forEach((part, idx) => {
-          console.log(`[PART ${idx}]`, {
-            type: part.type,
-            keys: Object.keys(part),
-            toolCallId: (part as any).toolCallId,
-            toolName: (part as any).toolName,
-          });
+          // console.log(`[PART ${idx}]`, {
+          //   type: part.type,
+          //   keys: Object.keys(part),
+          //   toolCallId: (part as any).toolCallId,
+          //   toolName: (part as any).toolName,
+          // });
         });
         const toolInvocationsMap: Record<string, ToolInvocation> = {};
         for (const part of sdkMsg.parts) {
+          console.log(`partType: ${part.type}`)
+          if (part.type === "tool-call" || part.type === "tool-result" || part.type.startsWith("tool")) {
+            console.log(`part: ${JSON.stringify(part)} || toolDirect: ${sdkMsg.toolInvocations}`)
+          }
+
           if (part.type === "text") {
             content += part.text || "";
           } else if (part.type === "tool-call" && part.toolCallId && part.toolName) {
@@ -170,6 +175,21 @@ export function ChatClient({ initialPosition, starters, latestAnalysisDate }: Ch
               args: existing ? existing.args : (part.args || {}),
               state: "result",
               result: part.result,
+            };
+          } else if (part.type.startsWith("tool-") && part.type !== "tool-call" && part.type !== "tool-result" && (part as any).toolCallId) {
+            const castPart = part as any;
+            const toolName = part.type.substring(5);
+            const toolCallId = castPart.toolCallId;
+            const state = castPart.state === "output-available" ? "result" : "call";
+            const args = castPart.input || castPart.args || {};
+            const result = castPart.output !== undefined ? castPart.output : castPart.result;
+
+            toolInvocationsMap[toolCallId] = {
+              toolCallId,
+              toolName,
+              args,
+              state,
+              result,
             };
           }
         }
@@ -193,13 +213,13 @@ export function ChatClient({ initialPosition, starters, latestAnalysisDate }: Ch
         }));
       }
 
-      console.log("[DEBUG ChatClient mapped]", {
-        id: sdkMsg.id,
-        role: sdkMsg.role,
-        partsJson: JSON.stringify(sdkMsg.parts),
-        toolInvocationsJson: JSON.stringify(sdkMsg.toolInvocations),
-        parsedInvocationsJson: JSON.stringify(toolInvocations),
-      });
+      // console.log("[DEBUG ChatClient mapped]", {
+      //   id: sdkMsg.id,
+      //   role: sdkMsg.role,
+      //   partsJson: JSON.stringify(sdkMsg.parts),
+      //   toolInvocationsJson: JSON.stringify(sdkMsg.toolInvocations),
+      //   parsedInvocationsJson: JSON.stringify(toolInvocations),
+      // });
 
       return {
         id: sdkMsg.id,

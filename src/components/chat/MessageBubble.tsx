@@ -32,10 +32,12 @@ export function MessageBubble({ message, onSelectSuggestion, isLast }: MessageBu
   const [copied, setCopied] = React.useState(false);
 
   const suggestions = React.useMemo(() => {
+    console.log(`role: ${message.role} | message.toolInvocations: ${message.toolInvocations}`);
     if (message.role !== "assistant" || !message.toolInvocations) return null;
     const toolCall = message.toolInvocations.find(
       (ti) => ti.toolName === "suggestFollowUps" && ti.state === "result"
     );
+    console.log(`toolCall: ${toolCall}`)
     if (toolCall && toolCall.result && typeof toolCall.result === "object") {
       const resultObj = toolCall.result as Record<string, unknown>;
       if (Array.isArray(resultObj.suggestions)) {
@@ -45,15 +47,20 @@ export function MessageBubble({ message, onSelectSuggestion, isLast }: MessageBu
     return null;
   }, [message]);
 
-  console.log("[DEBUG MessageBubble]", {
-    role: message.role,
-    isLast,
-    hasToolInvocations: !!message.toolInvocations,
-    toolInvocationsCount: message.toolInvocations ? message.toolInvocations.length : 0,
-    toolNames: message.toolInvocations ? message.toolInvocations.map(ti => ti.toolName) : [],
-    toolStates: message.toolInvocations ? message.toolInvocations.map(ti => ti.state) : [],
-    suggestions,
-  });
+  if (suggestions && suggestions.length > 0) {
+    console.log('>>>>>> FOUND SUGGESTION <<<<<<')
+    console.log(suggestions)
+  }
+
+  // console.log("[DEBUG MessageBubble]", {
+  //   role: message.role,
+  //   isLast,
+  //   hasToolInvocations: !!message.toolInvocations,
+  //   toolInvocationsCount: message.toolInvocations ? message.toolInvocations.length : 0,
+  //   toolNames: message.toolInvocations ? message.toolInvocations.map(ti => ti.toolName) : [],
+  //   toolStates: message.toolInvocations ? message.toolInvocations.map(ti => ti.state) : [],
+  //   suggestions,
+  // });
 
   const handleCopy = React.useCallback(async () => {
     try {

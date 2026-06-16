@@ -65,11 +65,11 @@ export function MessageList({ messages, isLoading, onSelectSuggestion }: Message
           </div>
         ) : (
           messages.map((message, index) => {
-            const hasContent = message.content.trim() !== "";
+            const hasContent = message.content.trim() !== "" || (message.toolInvocations && message.toolInvocations.length > 0);
 
             return (
               <div key={message.id} className="w-full flex flex-col">
-                {/* Render the text bubble only if content exists */}
+                {/* Render the bubble if content or tool invocations exist */}
                 {hasContent && (
                   <MessageBubble 
                     message={mapToChatMessage(message)} 
