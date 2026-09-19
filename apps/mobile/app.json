@@ -8,9 +8,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "id.annasblackhat.btcchat"
     },
     "android": {
+      "package": "id.annasblackhat.btcchat",
       "adaptiveIcon": {
         "backgroundColor": "#09090b",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -21,6 +23,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "936f46de-2896-46be-8b3b-1ccabcee6a96"
+      }
+    },
+    "owner": "annasblackhat"
   }
 }
