@@ -1,0 +1,152 @@
+"use client";
+
+import * as React from "react";
+import { 
+  Loader2, 
+  Check, 
+  Terminal, 
+  ChevronDown, 
+  ChevronUp, 
+  TrendingUp, 
+  Database, 
+  Compass, 
+  BookOpen 
+} from "lucide-react";
+import { cn } from '@btc-chat/shared';
+
+export interface ToolCallIndicatorProps {
+  toolCallId: string;
+  toolName: string;
+  args: Record<string, unknown>;
+  state: "call" | "result";
+  result?: unknown;
+}
+
+const TOOL_METADATA: Record<
+  string, 
+  { description: string; icon: React.ComponentType<{ className?: string }> }
+> = {
+  getCurrentPrice: {
+    description: "Fetching real-time BTC/USDT spot price...",
+    icon: TrendingUp,
+  },
+  getCurrentPosition: {
+    description: "Retrieving active trade position...",
+    icon: Compass,
+  },
+  updateUserPosition: {
+    description: "Updating active trade position...",
+    icon: Compass,
+  },
+  clearActivePosition: {
+    description: "Clearing active trade position...",
+    icon: Compass,
+  },
+  getLatestAgentMemory: {
+    description: "Analyzing daily market consensus and memory...",
+    icon: Database,
+  },
+  getRecentDailyAnalyses: {
+    description: "Scanning recent daily analyst reports...",
+    icon: BookOpen,
+  },
+  getDailyAnalysisByVideoId: {
+    description: "Loading target analyst video records...",
+    icon: BookOpen,
+  },
+  getRecentPredictions: {
+    description: "Compiling recent accuracy records...",
+    icon: Database,
+  },
+  getPredictionByVideoId: {
+    description: "Locating prediction outcome history...",
+    icon: Database,
+  },
+  getTechniqueLedgerEntries: {
+    description: "Checking technique win rate ledger...",
+    icon: Database,
+  },
+};
+
+export function ToolCallIndicator({
+  toolName,
+  state,
+  args,
+  result,
+}: ToolCallIndicatorProps) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const metadata = TOOL_METADATA[toolName] || {
+    description: `Executing background tool: ${toolName}...`,
+    icon: Terminal,
+  };
+  const Icon = metadata.icon;
+  const isCompleted = state === "result";
+
+  return (
+    <div className="w-full my-2 animate-fade-in">
+      <div 
+        className={cn(
+          "flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg text-sm select-none border transition-all duration-200",
+          isCompleted 
+            ? "bg-card/20 border-border/60 text-muted-foreground hover:border-border/80" 
+            : "bg-card/50 border-border/60 text-foreground shadow-md shadow-foreground/2 dark:shadow-black/30 backdrop-blur-sm"
+        )}
+      >
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div 
+            className={cn(
+              "flex items-center justify-center size-6 rounded-md border shrink-0 transition-colors",
+              isCompleted 
+                ? "bg-emerald-500/10 dark:bg-emerald-950/10 border-emerald-500/20 dark:border-emerald-900/50 text-emerald-600 dark:text-emerald-400" 
+                : "bg-muted border border-border text-muted-foreground"
+            )}
+          >
+            {isCompleted ? (
+              <Check className="size-3.5 stroke-[3px]" />
+            ) : (
+              <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 min-w-0">
+            <Icon className={cn("size-4 shrink-0 opacity-70", !isCompleted && "text-foreground")} />
+            <span className="font-medium truncate leading-none">{metadata.description}</span>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={cn(
+            "flex items-center justify-center size-7 rounded-md hover:bg-muted hover:text-foreground transition-all active:scale-95 text-muted-foreground",
+            isOpen && "text-foreground bg-muted"
+          )}
+          title="Toggle execution logs"
+          type="button"
+        >
+          {isOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+        </button>
+      </div>
+
+      {isOpen && (
+        <div className="mt-1.5 mx-1 p-3 rounded-lg bg-background border border-border text-xs font-mono text-muted-foreground shadow-inner max-w-full overflow-hidden animate-slide-down">
+          <div className="flex flex-col gap-2">
+            <div>
+              <span className="text-muted-foreground/60 font-bold block mb-1 uppercase tracking-wider text-[10px]">{"// Parameters"}</span>
+              <pre className="whitespace-pre-wrap break-all bg-muted/50 p-2 rounded border border-border text-foreground max-h-48 overflow-y-auto">
+                {JSON.stringify(args, null, 2)}
+              </pre>
+            </div>
+            {isCompleted && result !== undefined && (
+              <div className="pt-2 border-t border-border/80">
+                <span className="text-muted-foreground/60 font-bold block mb-1 uppercase tracking-wider text-[10px]">{"// Response"}</span>
+                <pre className="whitespace-pre-wrap break-all bg-muted/50 p-2 rounded border border-border text-foreground max-h-60 overflow-y-auto">
+                  {JSON.stringify(result, null, 2)}
+                </pre>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

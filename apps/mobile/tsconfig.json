@@ -1,0 +1,12 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@btc-chat/shared": ["../../packages/shared/src/index.ts"],
+      "@btc-chat/shared/*": ["../../packages/shared/src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", "../../packages/shared/src/**/*.ts"]
+}
