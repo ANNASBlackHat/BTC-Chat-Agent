@@ -3,7 +3,7 @@
     "name": "BTC Chat",
     "slug": "btc-chat",
     "scheme": "btc-chat",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -13,6 +13,8 @@
     },
     "android": {
       "package": "id.annasblackhat.btcchat",
+      "versionCode": 2,
+      "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "backgroundColor": "#09090b",
         "foregroundImage": "./assets/android-icon-foreground.png",
