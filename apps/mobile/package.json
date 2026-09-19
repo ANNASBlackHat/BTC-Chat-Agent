@@ -14,14 +14,15 @@
     "@btc-chat/shared": "workspace:*",
     "ai": "^6.0.193",
     "expo": "~57.0.24",
-    "expo-secure-store": "~15.0.7",
+    "expo-secure-store": "~57.0.4",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
+    "react-dom": "19.2.3",
     "react-native": "0.86.3"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
-    "typescript": "~5.9.2"
+    "typescript": "~6.0.3"
   },
   "private": true
 }
