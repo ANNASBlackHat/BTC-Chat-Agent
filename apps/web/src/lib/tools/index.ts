@@ -14,6 +14,8 @@ import {
 } from './pipeline'
 import { getPriceAlerts, createPriceAlert } from './alert'
 import { suggestFollowUps } from './suggestions'
+import { calculateTradeRisk } from './risk'
+import { get24hTickerStats } from './ticker'
 
 export const allTools = {
   getCurrentPrice,
@@ -29,6 +31,8 @@ export const allTools = {
   getPriceAlerts,
   createPriceAlert,
   suggestFollowUps,
+  calculateTradeRisk,
+  get24hTickerStats,
 }
 
 
