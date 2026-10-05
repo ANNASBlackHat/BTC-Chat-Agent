@@ -4,8 +4,9 @@ import * as React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from '@btc-chat/shared';
-import { ChatMessage, ToolInvocation } from '@btc-chat/shared';
+import { ChatMessage, ToolInvocation, parseOpenUIMessage } from '@btc-chat/shared';
 import { ToolCallPanel } from "./ToolCallPanel";
+import { WebOpenUIRenderer } from "./openui/WebOpenUIRenderer";
 import { Copy, Check } from "lucide-react";
 
 export interface MessageBubbleProps {
@@ -30,6 +31,13 @@ const UserAvatar = () => (
 export function MessageBubble({ message, onSelectSuggestion, isLast }: MessageBubbleProps) {
   const isUser = message.role === "user";
   const [copied, setCopied] = React.useState(false);
+
+  const openUiParsed = React.useMemo(() => {
+    if (isUser || !message.content) {
+      return { hasOpenUI: false, cleanText: message.content || '', rootNode: null };
+    }
+    return parseOpenUIMessage(message.content);
+  }, [isUser, message.content]);
 
   const suggestions = React.useMemo(() => {
     console.log(`role: ${message.role} | message.toolInvocations: ${message.toolInvocations}`);
@@ -233,9 +241,13 @@ export function MessageBubble({ message, onSelectSuggestion, isLast }: MessageBu
                 },
               }}
             >
-              {message.content}
+              {openUiParsed.cleanText}
             </ReactMarkdown>
           </div>
+
+          {openUiParsed.hasOpenUI && openUiParsed.rootNode && (
+            <WebOpenUIRenderer node={openUiParsed.rootNode} />
+          )}
 
           {message.role === "assistant" && message.toolInvocations && message.toolInvocations.length > 0 && (
             <ToolCallPanel toolInvocations={message.toolInvocations} />
