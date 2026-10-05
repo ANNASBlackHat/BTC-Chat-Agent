@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { colors } from '../theme';
-import type { UIMessage } from '@btc-chat/shared';
+import { type UIMessage, parseOpenUIMessage } from '@btc-chat/shared';
+import { NativeOpenUIRenderer } from './openui/NativeOpenUIRenderer';
 
 /**
  * Minimal inline-markdown renderer: renders text line-by-line, converting
@@ -36,6 +37,13 @@ function MarkdownText({ text }: { text: string }) {
 
 export function MessageRow({ message }: { message: UIMessage }) {
   const isUser = message.role === 'user';
+
+  const openUiParsed = useMemo(() => {
+    if (isUser || !message.content) {
+      return { hasOpenUI: false, cleanText: message.content || '', rootNode: null };
+    }
+    return parseOpenUIMessage(message.content);
+  }, [isUser, message.content]);
 
   return (
     <View
@@ -82,7 +90,11 @@ export function MessageRow({ message }: { message: UIMessage }) {
         </View>
       ))}
 
-      {message.content ? <MarkdownText text={message.content} /> : null}
+      {openUiParsed.cleanText ? <MarkdownText text={openUiParsed.cleanText} /> : null}
+
+      {openUiParsed.hasOpenUI && openUiParsed.rootNode ? (
+        <NativeOpenUIRenderer node={openUiParsed.rootNode} />
+      ) : null}
     </View>
   );
 }
