@@ -1,4 +1,4 @@
-import { PositionContext } from '@btc-chat/shared';
+import { PositionContext, generateOpenUIPrompt } from '@btc-chat/shared';
 
 /**
  * Compiles the system prompt dynamically for the chat agent based on active trading position context.
@@ -102,6 +102,12 @@ To deliver a premium trading terminal experience, you must strictly follow these
 `;
   }
 
-  const finalPrompt = `${basePersona}${positionSection}`;
+  const openUiSection = `
+---
+
+${generateOpenUIPrompt()}
+`;
+
+  const finalPrompt = `${basePersona}${positionSection}${openUiSection}`;
   return finalPrompt.trim();
 }
