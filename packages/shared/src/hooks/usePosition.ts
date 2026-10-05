@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useState } from 'react';
 import { UserPosition } from '../types';
 import { getApiBaseUrl } from '../lib/api';
